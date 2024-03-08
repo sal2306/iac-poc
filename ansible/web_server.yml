@@ -1,1 +1,20 @@
+---
+- name: Change web server default TCP port
+  hosts: all
+  become: yes
+  vars:
+    web_server_service: "httpd"  # Change for a different web server service
 
+  tasks:
+    - name: Change default TCP port from 80 to 8080
+      lineinfile:
+        path: /etc/httpd/conf/httpd.conf  # Adjust the path as per web server configuration file
+        regexp: "^Listen"
+        line: "Listen 8080"
+      notify: restart web server
+
+  handlers:
+    - name: restart web server
+      service:
+        name: "{{ web_server_service }}"
+        state: restarted
